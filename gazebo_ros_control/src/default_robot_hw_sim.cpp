@@ -239,7 +239,8 @@ bool DefaultRobotHWSim::initSim(
 
 void DefaultRobotHWSim::readSim(ros::Time time, ros::Duration period)
 {
-  for(unsigned int j=0; j < n_dof_; j++)
+  //for(unsigned int j=0; j < n_dof_; j++)
+    for(unsigned int j=0; j < sim_joints_.size(); j++)
   {
     // Gazebo has an interesting API...
     if (joint_types_[j] == urdf::Joint::PRISMATIC)
@@ -247,7 +248,9 @@ void DefaultRobotHWSim::readSim(ros::Time time, ros::Duration period)
       joint_position_[j] = sim_joints_[j]->GetAngle(0).Radian();
     }
     else
-    {
+    {      
+        //ROS_ERROR("size: %d dof: %d j: %d %s",sim_joints_.size(),n_dof_,j,sim_joints_[j]->GetName().c_str()); //joao
+
       joint_position_[j] += angles::shortest_angular_distance(joint_position_[j],
                             sim_joints_[j]->GetAngle(0).Radian());
     }
@@ -280,7 +283,7 @@ void DefaultRobotHWSim::writeSim(ros::Time time, ros::Duration period)
   vj_sat_interface_.enforceLimits(period);
   vj_limits_interface_.enforceLimits(period);
 
-  for(unsigned int j=0; j < n_dof_; j++)
+  for(unsigned int j=0; j < sim_joints_.size(); j++)
   {
     switch (joint_control_methods_[j])
     {
